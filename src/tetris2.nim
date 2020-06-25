@@ -1,6 +1,6 @@
 from os import sleep
-from strutils import join
-from sequtils import mapIt
+
+import illwill
 
 type
   Board* = seq[seq[int]]
@@ -28,9 +28,39 @@ const
     @[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   ]
 
+proc color(n: int): BackgroundColor =
+  case n
+  of 0: bgBlack
+  of 1: bgWhite
+  else: bgBlack
+
+proc drawBoard(tb: var TerminalBuffer, board: Board) =
+  for y, row in board:
+    # 行を描画
+    for x, cell in row:
+      let c = cell.color()
+      tb.setBackgroundColor(c)
+      tb.write(x*2, y, "  ")
+      tb.resetAttributes()
+
+proc exitProc() {.noconv.} =
+  ## 終了処理
+  illwillDeinit()
+  showCursor()
+
+# illwillの初期化
+illwillInit(fullscreen=true)
+
+# Ctrl-Cでプログラムが中断したときにプロシージャを呼ぶ
+setControlCHook(exitProc)
+
+# カーソルを非表示
+hideCursor()
+
+# 画面描画用のバッファ
+var tb = newTerminalBuffer(terminalWidth(), terminalHeight())
+
 while true:
-  for row in initialBoard:
-    # シーケンスの各要素を文字列に変換してから結合
-    echo row.mapIt($it).join
-  echo "---"
+  tb.drawBoard(initialBoard)
+  tb.display()
   sleep 1000 # ミリ秒
