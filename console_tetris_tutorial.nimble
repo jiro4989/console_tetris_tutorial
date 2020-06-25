@@ -5,7 +5,7 @@ author        = "jiro4989"
 description   = "A new awesome nimble package"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["tetris1"]
+bin           = @["tetris1", "tetris2"]
 binDir        = "bin"
 
 
